@@ -37,6 +37,29 @@ export class NotificationsService implements OnModuleDestroy {
     );
   }
 
+  @RabbitSubscribe({
+    exchange: 'bptf-price-history.created',
+    routingKey: '*',
+    queue: 'websocketNotificationBptfPriceHistory',
+    queueOptions: {
+      arguments: {
+        'x-queue-type': 'quorum',
+      },
+    },
+    errorHandler: requeueErrorHandler,
+  })
+  private async handlePriceHistory(price: any): Promise<void> {
+    this.logger.debug('Publishing price history for ' + price.sku);
+
+    await this.publisherClient.publish(
+      'websocket',
+      JSON.stringify({
+        type: 'PRICE_CHANGED',
+        data: price,
+      }),
+    );
+  }
+
   async onModuleDestroy() {
     // Close Redis client before stopping
     await this.publisherClient.quit();

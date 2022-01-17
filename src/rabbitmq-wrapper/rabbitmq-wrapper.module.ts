@@ -17,6 +17,10 @@ import { Config, RabbitMQConfig } from '../common/config/configuration';
               name: 'bptf-price.updated',
               type: 'fanout',
             },
+            {
+              name: 'bptf-price-history.created',
+              type: 'fanout',
+            },
           ],
           uri: `amqp://${rabbitmqConfig.username}:${rabbitmqConfig.password}@${rabbitmqConfig.host}:${rabbitmqConfig.port}/${rabbitmqConfig.vhost}`,
           prefetchCount: 1,
